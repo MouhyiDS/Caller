@@ -1,4 +1,4 @@
-const user = require("../models/User");
+const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -45,13 +45,8 @@ exports.login = async ({ email, password }) => {
         throw new Error("Invalid email or password");
     }
 
-      // 2️⃣ Compare passwords
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    throw new Error("Invalid credentials");
-  }
 
-  // 3️⃣ Generate token
+  //  Generate token
   const token = jwt.sign(
     { id: user._id },
     process.env.JWT_SECRET || "secretkey",
@@ -62,6 +57,7 @@ exports.login = async ({ email, password }) => {
     _id: user._id,
     username: user.username,
     email: user.email,
+    password : user.password,
     token,
   };
 }
