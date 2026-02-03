@@ -8,8 +8,8 @@ connectDB();
 const server = http.createServer(app);
 
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/messages', require('./routes/messageRoutes'));
 // app.use('/api/users', require('./routes/userRoutes'));
-// app.use('/api/messages', require('./routes/messageRoutes'));
 // app.use('/api/groups', require('./routes/groupRoutes'));
 
 

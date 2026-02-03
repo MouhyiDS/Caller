@@ -9,20 +9,19 @@ const messageSchema = new mongoose.Schema(
     },
     receiver: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "User", // for private chats
     },
     group: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Group",
+      ref: "Group", // for group chats
     },
     content: {
-      type: String, // text message (optional now)
+      type: String, // text OR file/image URL
     },
-    mediaUrl: {
-      type: String, // link to image/file
-    },
-    mediaType: {
-      type: String, // "image", "video", "file"
+    type: {
+      type: String,
+      enum: ["text", "image", "file"],
+      default: "text",
     },
   },
   { timestamps: true }
