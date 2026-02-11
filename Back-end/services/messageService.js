@@ -21,5 +21,9 @@ exports.fetchMessages = async ({ currentUserId, userId, groupId}) => {
         ]
     }).sort({ createdAt: 1 }).populate("sender", "username email").populate("receiver", "username email");
 }
+exports.deleteMessage = async ({msgId}) => {
+        return await Message.deleteOne({ _id: msgId })
+    }
+
 
 

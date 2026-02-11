@@ -25,3 +25,11 @@ exports.fetchMessages = async (req, res) => {
         res.status(400).json({ message: error.message });
     }
 }
+
+exports.deleteMessage = async (req, res) => {
+    try{
+        await messageService.deleteMessage(req.query.msgId);
+    }catch(error){
+        res.status(400).json({ message: error.message });
+    }
+}
