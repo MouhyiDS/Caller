@@ -19,10 +19,24 @@ exports.fetchMessages = async ({ currentUserId, userId, groupId}) => {
             { sender: currentUserId, receiver: userId },
             { receiver: currentUserId, sender: userId }
         ]
-    }).sort({ createdAt: 1 }).populate("sender", "username email").populate("receiver", "username email");
+    }).sort({ createdAt: 1 })
+    .populate("sender", "username email")
+    .populate("receiver", "username email");
 }
-exports.deleteMessage = async ({msgId}) => {
-        return await Message.deleteOne({ _id: msgId })
+exports.deleteMessage = async ({msgId, userId}) => {
+        const message = await Message.findById(msgId);
+
+        if(!message){
+            throw new Error("message not found");
+        }
+
+        if(userId.toString() != message.sender.toString()){
+            throw new Error("user not auth to delete the message")
+        }
+
+        await message.deleteOne();
+        
+        return {message : "message deleted!!"}
     }
 
 
