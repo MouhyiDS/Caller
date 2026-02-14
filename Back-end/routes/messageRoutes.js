@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { sendMessage, fetchMessages, deleteMessage } = require("../controllers/messageController");
 const { authMiddleware } = require("../middlware/authMiddleware");
+const { sendMessage, fetchMessages, deleteMessage } = require("../controllers/messageController");
 
 router.post("/", authMiddleware, sendMessage);
 router.get("/", authMiddleware, fetchMessages);
