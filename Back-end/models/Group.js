@@ -24,7 +24,7 @@ const groupSchema = new mongoose.Schema(
       },
     ],
     groupImage: {
-      type: String, // optional group picture
+      type: String, 
     },
   },
   { timestamps: true }
