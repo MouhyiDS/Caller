@@ -16,7 +16,15 @@ exports.createGroup = async(req ,res) =>{
     return group
 }
 
-exports.find = async (groupId) =>{
+exports.deleteGroup  = async(groupId) =>{
+
+    const group = await findGroup(groupId);
+    await group.delete();
+
+    return {message : "Group deleted!!"}
+}
+
+exports.findGroup = async (groupId) =>{
 
     const group = Group.findById(groupId);
     if(!group){
@@ -28,20 +36,38 @@ exports.find = async (groupId) =>{
 
 
 exports.addMember = async(groupId, userId) =>{
-    const group = find(groupId);
 
-    
+    const group = await findGroup(groupId);
+    group.members.push(userId);
+    await group.save()
+
+    return group.members
 }
 
-exports.dropMember = async(req, res) =>{
-    
+exports.dropMember = async(groupId, userId) =>{
+        
+    const group = await findGroup(groupId);
+    group.members.delete(userId);
+    await group.save()
+
+    return group.members
 }
-exports.addAdmin = async(req, res) =>{
+exports.addAdmin = async(groupId, userId) =>{
     
+    const group = await findGroup(groupId);
+    group.admins.push(userId);
+    await group.save()
+
+    return group.admins
 }
 
-exports.dropAdmin = async(req, res) =>{
-    
+exports.dropAdmin = async(groupId, userId) =>{
+        
+    const group = await findGroup(groupId);
+    group.admins.delete(userId);
+    await group.save()
+
+    return group.admins
 }
 
 

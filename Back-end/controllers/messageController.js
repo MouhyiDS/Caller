@@ -28,8 +28,10 @@ exports.fetchMessages = async (req, res) => {
 
 exports.deleteMessage = async (req, res) => {
     try{
-        const message = await messageService.deleteMessage({msgId : req.params.id,
-                                                            userId : req.user._id});
+        const message = await messageService.deleteMessage({
+            msgId : req.params.id,
+            userId : req.user._id
+        });
 
         res.status(200).json(message);
     }catch(error){
