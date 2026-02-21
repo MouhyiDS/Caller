@@ -1,73 +1,69 @@
 const Group = require("../models/Group");
 
-exports.createGroup = async(req ,res) =>{
-
-    let members = [];
-    members.push(req.user._id);
+exports.createGroup = async({ name, creatorId, groupImage }) =>{
+    const members = [creatorId];
+    const admins = [creatorId];
 
     const group = await Group.create({
-        name: req.name,
-        creator: req.user._id,
+        name,
+        creator: creatorId,
         members,
-        admins : members,
-        groupImage : req.groupImage
-    })
+        admins,
+        groupImage,
+    });
 
-    return group
-}
-
-exports.deleteGroup  = async(groupId) =>{
-
-    const group = await findGroup(groupId);
-    await group.delete();
-
-    return {message : "Group deleted!!"}
+    return group;
 }
 
 exports.findGroup = async (groupId) =>{
+    const group = await Group.findById(groupId)
+        .populate("members", "username email")
+        .populate("admins", "username email");
 
-    const group = Group.findById(groupId);
-    if(!group){
-        throw new Error("group not found !!")
-    }
-
-    return group
+    if (!group) throw new Error("Group not found");
+    return group;
 }
 
+exports.deleteGroup  = async(groupId) =>{
+    const group = await findGroup(groupId);
+    await group.deleteOne();
+
+    return { message: "Group deleted successfully" };
+}
 
 exports.addMember = async(groupId, userId) =>{
-
     const group = await findGroup(groupId);
-    group.members.push(userId);
-    await group.save()
 
-    return group.members
+    if (!group.members.includes(userId)) group.members.push(userId);
+    await group.save();
+
+    return group.members;
 }
 
-exports.dropMember = async(groupId, userId) =>{
-        
+exports.removeMember = async(groupId, userId) =>{
     const group = await findGroup(groupId);
-    group.members.delete(userId);
+    group.members = group.members.filter(id => id.toString() !== userId.toString());
+    group.admins = group.admins.filter(id => id.toString() !== userId.toString());
     await group.save()
 
     return group.members
 }
 exports.addAdmin = async(groupId, userId) =>{
-    
     const group = await findGroup(groupId);
+    if(!group.members.includes(userId)) throw new Error("User must be a member to be an admin.");
+    if(!group.admins.includes(userId)) group.admins.push(userId);
     group.admins.push(userId);
     await group.save()
 
-    return group.admins
+    return group.admins;
 }
 
-exports.dropAdmin = async(groupId, userId) =>{
-        
+exports.removeAdmin = async(groupId, userId) =>{  
     const group = await findGroup(groupId);
-    group.admins.delete(userId);
-    await group.save()
+    group.admins = group.admins.filter(id => id.toString() !== userId.toString());
+    await group.save();
 
-    return group.admins
+    return group.admins;
 }
 
 
