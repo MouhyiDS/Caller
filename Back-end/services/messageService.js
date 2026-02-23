@@ -11,7 +11,7 @@ exports.sendMessage = async ({sender, receiver, group, content, type}) => {
 }
 exports.fetchMessages = async ({ currentUserId, userId, groupId}) => {
     if(groupId){
-        return await Messsage.find({ group: groupId }).sort({ createdAt: 1 }).populate("sender", "username email").populate("group", "name");
+        return await Message.find({ group: groupId }).sort({ createdAt: 1 }).populate("sender", "username email").populate("group", "name");
     }
 
     return await Message.find({ 
@@ -30,8 +30,18 @@ exports.deleteMessage = async ({msgId, userId}) => {
             throw new Error("message not found");
         }
 
-        if(userId.toString() != message.sender.toString()){
-            throw new Error("user not auth to delete the message")
+        if (message.group) {
+
+            const group = await Group.findById(message.group);
+
+            const isAdmin = group.admins.includes(userId);
+
+            if (
+                userId.toString() !== message.sender.toString() &&
+                !isAdmin
+            ) {
+                throw new Error("Not authorized");
+            }
         }
 
         await message.deleteOne();
