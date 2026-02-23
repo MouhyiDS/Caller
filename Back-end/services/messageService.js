@@ -10,10 +10,25 @@ exports.sendMessage = async ({sender, receiver, group, content, type}) => {
     })
 }
 exports.fetchMessages = async ({ currentUserId, userId, groupId}) => {
-    if(groupId){
-        return await Message.find({ group: groupId }).sort({ createdAt: 1 }).populate("sender", "username email").populate("group", "name");
-    }
 
+        if (groupId) {
+
+        const group = await Group.findById(groupId);
+
+        if (!group) throw new Error("Group not found");
+
+        const isMember = group.members.includes(currentUserId);
+
+        if (!isMember) {
+            throw new Error("Not authorized to view this group");
+        }
+
+        return await Message.find({ group: groupId })
+            .sort({ createdAt: 1 })
+            .populate("sender", "username email")
+            .populate("group", "name");
+    }
+    
     return await Message.find({ 
         $or: [
             { sender: currentUserId, receiver: userId },
