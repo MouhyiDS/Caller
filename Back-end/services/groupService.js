@@ -66,4 +66,20 @@ exports.removeAdmin = async(groupId, userId) =>{
     return group.admins;
 }
 
+exports.deleteGroup = async(groupId, userId) =>{ 
+    const group = await findGroup(groupId);
+    if(userId.toString() !== group.creator.toString()){
+        throw new Error (`user ${userId} not auth to delete group ${group._id}`)
+    }
+    await group.deleteOne()
+    return {message : `group ${group.name} is deleted`}
+};    
 
+exports.leaveGroup = async(groupId, userId, userName) =>{ 
+    const group = await findGroup(groupId);
+    group.members = group.members.filter(id => id.toString() !== userId.toString());
+    group.members = group.admins.filter(id => id.toString() !== userId.toString());
+    await group.save();
+
+    return {message : `user ${userName} left ${group.name}`}
+};
