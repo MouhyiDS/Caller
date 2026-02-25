@@ -78,7 +78,7 @@ exports.deleteGroup = async(groupId, userId) =>{
     return {message : `group ${group.name} is deleted`}
 };    
 
-exports.leaveGroup = async(groupId, userId, userName) =>{ 
+exports.leaveGroup = async(groupId, userId) =>{ 
     const group = await findGroup(groupId);
 
     const isMember = group.members.some(

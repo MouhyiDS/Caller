@@ -1,6 +1,6 @@
 const http = require('http');
 const app = require('./app');
-const io = require('socket.io');
+const {Server} = require('socket.io');
 const connectDB = require('./config/db');
 
 require('dotenv').config();
@@ -26,11 +26,16 @@ const io = new Server(server, {
 io.on("connection", (socket)=> {
   console.log("user connected : ", socket.id);
 
+  socket.on("hello", (data) => {
+    console.log("Received hello event with data: ", data);
+    socket.emit("helloResponse", { message: "Hello from the server!" });
+  })
+
   socket.on("disconnect", ()=> {
     console.log("user disconnected : ", socket.id);
   })
 })
 
 server.listen(process.env.PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${process.env.PORT}`);
 });

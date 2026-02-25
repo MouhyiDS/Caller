@@ -1,6 +1,6 @@
 const groupService = require("../services/groupService.js");
 
-exports.isAdmin = async (req, res, next) => {
+exports.adminMiddleware = async (req, res, next) => {
     try {
         
         const group = await groupService.findGroup(req.params.groupId);
