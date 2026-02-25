@@ -1,6 +1,6 @@
 const User = require("../models/User")
 
-exports.find = async (userId) =>{
+exports.searchUser = async (userId) =>{
 
     const user = User.findById(userId);
     if(!user){

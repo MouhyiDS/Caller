@@ -1,5 +1,5 @@
 const Group = require("../models/Group");
-
+const Message = require("../models/Message");
 exports.createGroup = async({ name, creatorId, groupImage }) =>{
     const members = [creatorId];
     const admins = [creatorId];
@@ -69,16 +69,32 @@ exports.removeAdmin = async(groupId, userId) =>{
 exports.deleteGroup = async(groupId, userId) =>{ 
     const group = await findGroup(groupId);
     if(userId.toString() !== group.creator.toString()){
-        throw new Error (`user ${userId} not auth to delete group ${group._id}`)
+        throw new Error("Only creator can delete the group");
     }
+
+    await Message.deleteMany({ group: groupId });
     await group.deleteOne()
+
     return {message : `group ${group.name} is deleted`}
 };    
 
 exports.leaveGroup = async(groupId, userId, userName) =>{ 
     const group = await findGroup(groupId);
+
+    const isMember = group.members.some(
+        id => id.toString() === userId.toString()
+    );
+
+    if (!isMember) {
+        throw new Error("User is not a member of this group");
+    }
+
+    if (group.creator.toString() === userId.toString()) {
+        throw new Error("Creator cannot leave the group");
+    }
+
     group.members = group.members.filter(id => id.toString() !== userId.toString());
-    group.members = group.admins.filter(id => id.toString() !== userId.toString());
+    group.admins = group.admins.filter(id => id.toString() !== userId.toString());
     await group.save();
 
     return {message : `user ${userName} left ${group.name}`}
