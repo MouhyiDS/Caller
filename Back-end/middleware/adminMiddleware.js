@@ -7,7 +7,7 @@ exports.adminMiddleware = async (req, res, next) => {
         const id = req.user._id.toString(); 
 
         if(!group.members.map(id => id.toString()).includes(id)){
-            return  res.status(403).json({ message: "User is not an admin of this group",
+            return  res.status(403).json({ message: " an admin of this group",
                 user: id,
                 group: req.params.groupId
              });
